@@ -42,7 +42,6 @@
 
       html {
         scroll-behavior: smooth;
-        /* Prevent zoom on double-tap */
         touch-action: manipulation;
       }
 
@@ -54,8 +53,111 @@
         min-height: 100dvh;
         overflow-x: hidden;
         cursor: default;
-        /* Prevent rubber-band overscroll flash on iOS */
         overscroll-behavior-y: none;
+      }
+
+      /* ─── Intro Screen ─── */
+      .intro-screen {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: linear-gradient(
+          135deg,
+          #fce4ef 0%,
+          #f7e8f8 50%,
+          #fde8d8 100%
+        );
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: clamp(2rem, 5vw, 3rem);
+        transition:
+          opacity 0.8s ease,
+          visibility 0.8s ease;
+        cursor: pointer;
+      }
+
+      .intro-screen.hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      .intro-title {
+        font-family: "Dancing Script", cursive;
+        font-size: clamp(2.2rem, 8vw, 3.5rem);
+        font-weight: 500;
+        color: #d5739d;
+        text-align: center;
+        margin-bottom: clamp(1rem, 3vh, 1.5rem);
+        opacity: 0;
+        animation: fadeUp 1.2s ease 0.3s forwards;
+        line-height: 1.3;
+      }
+
+      .intro-subtitle {
+        font-family: "Lora", serif;
+        font-size: clamp(0.9rem, 3.5vw, 1.1rem);
+        font-style: italic;
+        color: var(--lighter-text);
+        text-align: center;
+        opacity: 0;
+        animation: fadeIn 1s ease 1.5s forwards;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+      }
+
+      /* Sparkle effect for intro */
+      .intro-sparkle {
+        position: absolute;
+        pointer-events: none;
+        font-size: clamp(0.8rem, 2.5vw, 1.2rem);
+        opacity: 0;
+        animation: sparkle 2s ease-in-out infinite;
+      }
+
+      @keyframes sparkle {
+        0%,
+        100% {
+          opacity: 0;
+          transform: scale(0.5) rotate(0deg);
+        }
+        50% {
+          opacity: 0.8;
+          transform: scale(1.2) rotate(180deg);
+        }
+      }
+
+      .intro-sparkle:nth-child(1) {
+        top: 15%;
+        left: 10%;
+        animation-delay: 0s;
+      }
+      .intro-sparkle:nth-child(2) {
+        top: 25%;
+        right: 15%;
+        animation-delay: 0.5s;
+      }
+      .intro-sparkle:nth-child(3) {
+        bottom: 20%;
+        left: 20%;
+        animation-delay: 1s;
+      }
+      .intro-sparkle:nth-child(4) {
+        bottom: 30%;
+        right: 10%;
+        animation-delay: 1.5s;
+      }
+      .intro-sparkle:nth-child(5) {
+        top: 40%;
+        left: 5%;
+        animation-delay: 0.7s;
+      }
+      .intro-sparkle:nth-child(6) {
+        top: 50%;
+        right: 8%;
+        animation-delay: 1.2s;
       }
 
       /* ─── Layered Background ─── */
@@ -106,6 +208,16 @@
         pointer-events: none;
       }
 
+      /* ─── Main Content ─── */
+      .main-content {
+        opacity: 0;
+        transition: opacity 0.8s ease 0.5s;
+      }
+
+      .main-content.visible {
+        opacity: 1;
+      }
+
       /* ─── Floating Hearts ─── */
       .hearts-bg {
         position: fixed;
@@ -152,7 +264,6 @@
         max-width: 580px;
         margin: 0 auto;
         padding: 0 var(--page-px);
-        /* Safe area insets for notched phones */
         padding-left: max(var(--page-px), env(safe-area-inset-left));
         padding-right: max(var(--page-px), env(safe-area-inset-right));
       }
@@ -478,6 +589,9 @@
 
       /* ─── Responsive tweaks ─── */
       @media (max-width: 390px) {
+        .intro-title {
+          font-size: 2rem;
+        }
         .opening-line1,
         .opening-line2 {
           font-size: 1.42rem;
@@ -499,7 +613,9 @@
         .closing-main,
         .closing-signature,
         .closing-divider,
-        .separator {
+        .separator,
+        .intro-title,
+        .intro-subtitle {
           animation: none !important;
           transition: opacity 0.4s ease !important;
         }
@@ -510,92 +626,119 @@
     </style>
   </head>
   <body>
-    <div class="hearts-bg" id="heartsBg"></div>
+    <!-- ───────────── Intro Screen ───────────── -->
+    <div class="intro-screen" id="introScreen">
+      <div class="intro-sparkle">✨</div>
+      <div class="intro-sparkle">💫</div>
+      <div class="intro-sparkle">✨</div>
+      <div class="intro-sparkle">💫</div>
+      <div class="intro-sparkle">✨</div>
+      <div class="intro-sparkle">💫</div>
 
-    <div class="page">
-      <!-- ───────────── Opening ───────────── -->
-      <section class="opening">
-        <p class="opening-date">February 11, 2026</p>
-        <h1 class="opening-line1">"I don't make promises lightly."</h1>
-        <h1 class="opening-line2">"I make them honestly."</h1>
-        <div class="opening-divider"></div>
-        <p class="scroll-hint">Scroll slowly 🤍</p>
-      </section>
+      <h1 class="intro-title">Something for you 💕</h1>
+      <p class="intro-subtitle" id="clickText">click</p>
+    </div>
 
-      <!-- ───────────── Promises ───────────── -->
-      <section class="promises-section" id="promises">
-        <div class="promise-block" data-promise="1">
-          <p class="promise-number">— one —</p>
-          <div class="promise-text" style="position: relative">
-            <div class="promise-glow"></div>
-            "I'll listen — not just to your words, but I'll try to understand
-            the feelings you don't always say out loud."
+    <!-- ───────────── Main Content ───────────── -->
+    <div class="main-content" id="mainContent">
+      <div class="hearts-bg" id="heartsBg"></div>
+
+      <div class="page">
+        <!-- ───────────── Opening ───────────── -->
+        <section class="opening">
+          <p class="opening-date">February 11, 2026</p>
+          <h1 class="opening-line1">"I don't make promises lightly."</h1>
+          <h1 class="opening-line2">"I make them honestly."</h1>
+          <div class="opening-divider"></div>
+          <p class="scroll-hint">Scroll slowly 🤍</p>
+        </section>
+
+        <!-- ───────────── Promises ───────────── -->
+        <section class="promises-section" id="promises">
+          <div class="promise-block" data-promise="1">
+            <p class="promise-number">— one —</p>
+            <div class="promise-text" style="position: relative">
+              <div class="promise-glow"></div>
+              "I'll listen — not just to your words, but I'll try to understand
+              the feelings you don't always say out loud."
+            </div>
           </div>
-        </div>
 
-        <div class="separator">
-          <div class="sep-dot"></div>
-          <span class="sep-heart">🤍</span>
-          <div class="sep-dot"></div>
-        </div>
-
-        <div class="promise-block" data-promise="2">
-          <p class="promise-number">— two —</p>
-          <div class="promise-text" style="position: relative">
-            <div class="promise-glow"></div>
-            "I'll try to be patient, especially on days when things feel messy
-            or heavy."
+          <div class="separator">
+            <div class="sep-dot"></div>
+            <span class="sep-heart">🤍</span>
+            <div class="sep-dot"></div>
           </div>
-        </div>
 
-        <div class="separator">
-          <div class="sep-dot"></div>
-          <span class="sep-heart">🤍</span>
-          <div class="sep-dot"></div>
-        </div>
-
-        <div class="promise-block" data-promise="3">
-          <p class="promise-number">— three —</p>
-          <div class="promise-text" style="position: relative">
-            <div class="promise-glow"></div>
-            "I'll support your dreams, even the ones you're unsure about, and
-            even when I'm still learning how."
+          <div class="promise-block" data-promise="2">
+            <p class="promise-number">— two —</p>
+            <div class="promise-text" style="position: relative">
+              <div class="promise-glow"></div>
+              "I'll try to be patient, especially on days when things feel messy
+              or heavy."
+            </div>
           </div>
-        </div>
 
-        <div class="separator">
-          <div class="sep-dot"></div>
-          <span class="sep-heart">🤍</span>
-          <div class="sep-dot"></div>
-        </div>
-
-        <div class="promise-block" data-promise="4">
-          <p class="promise-number">— four —</p>
-          <div class="promise-text" style="position: relative">
-            <div class="promise-glow"></div>
-            "I'll grow with you - learning, unlearning, and figuring things out
-            together."
+          <div class="separator">
+            <div class="sep-dot"></div>
+            <span class="sep-heart">🤍</span>
+            <div class="sep-dot"></div>
           </div>
-        </div>
-      </section>
 
-      <!-- ───────────── Closing ───────────── -->
-      <section class="closing">
-        <div class="closing-divider" id="closingDivider"></div>
-        <p class="closing-line" id="closingLine1">
-          "This page isn't about promises for the future."
-        </p>
-        <p class="closing-line" id="closingLine2">
-          "It's about how I feel right now."
-        </p>
-        <p class="closing-main" id="closingMain">Happy Promise Day 🤍</p>
-        <p class="closing-signature" id="closingSignature">
-          - from me, honestly
-        </p>
-      </section>
+          <div class="promise-block" data-promise="3">
+            <p class="promise-number">— three —</p>
+            <div class="promise-text" style="position: relative">
+              <div class="promise-glow"></div>
+              "I'll support your dreams, even the ones you're unsure about, and
+              even when I'm still learning how."
+            </div>
+          </div>
+
+          <div class="separator">
+            <div class="sep-dot"></div>
+            <span class="sep-heart">🤍</span>
+            <div class="sep-dot"></div>
+          </div>
+
+          <div class="promise-block" data-promise="4">
+            <p class="promise-number">— four —</p>
+            <div class="promise-text" style="position: relative">
+              <div class="promise-glow"></div>
+              "I'll grow with you - learning, unlearning, and figuring things
+              out together."
+            </div>
+          </div>
+        </section>
+
+        <!-- ───────────── Closing ───────────── -->
+        <section class="closing">
+          <div class="closing-divider" id="closingDivider"></div>
+          <p class="closing-line" id="closingLine1">
+            "This page isn't about promises for the future."
+          </p>
+          <p class="closing-line" id="closingLine2">
+            "It's about how I feel right now."
+          </p>
+          <p class="closing-main" id="closingMain">Happy Promise Day 🤍</p>
+          <p class="closing-signature" id="closingSignature">
+            - from me, honestly
+          </p>
+        </section>
+      </div>
     </div>
 
     <script>
+      /* ─── Intro Screen Click Handler ─── */
+      const introScreen = document.getElementById("introScreen");
+      const mainContent = document.getElementById("mainContent");
+
+      introScreen.addEventListener("click", () => {
+        introScreen.classList.add("hidden");
+        setTimeout(() => {
+          mainContent.classList.add("visible");
+        }, 400);
+      });
+
       /* ─── Floating Hearts ─── */
       const heartsBg = document.getElementById("heartsBg");
       const heartChars = ["🤍", "🩷", "💗", "🌸", "✿", "🤍", "🩷"];
@@ -609,7 +752,7 @@
         const leftPct = 5 + Math.random() * 90;
         const dur = 22 + Math.random() * 20;
         const delay = Math.random() * -30;
-        const drift = (Math.random() - 0.5) * 80; // narrower drift on mobile
+        const drift = (Math.random() - 0.5) * 80;
 
         el.style.cssText = `
           left: ${leftPct}%;
@@ -624,11 +767,16 @@
         setTimeout(() => el.remove(), (dur + Math.abs(delay)) * 1000 + 1000);
       }
 
-      // Seed initial hearts (fewer on mobile for perf)
       const isMobile = window.innerWidth < 600;
       const seedCount = isMobile ? 9 : 14;
-      for (let i = 0; i < seedCount; i++) spawnHeart();
-      setInterval(spawnHeart, isMobile ? 4000 : 3200);
+
+      // Only start hearts after intro is clicked
+      introScreen.addEventListener("click", () => {
+        setTimeout(() => {
+          for (let i = 0; i < seedCount; i++) spawnHeart();
+          setInterval(spawnHeart, isMobile ? 4000 : 3200);
+        }, 800);
+      });
 
       /* ─── Scroll Reveal ─── */
       const revealItems = [
